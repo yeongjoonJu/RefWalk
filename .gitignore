@@ -216,3 +216,28 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ── RefWalk project artifacts ───────────────────────────────────────
+# Dataset (RegOps from HF) + locally-built OKG + embedding caches.
+# data/HIPAA/ is shipped in-repo (small); RegOps-Bench/ + okg/ are not.
+/data/*
+!/data/README.md
+!/data/.gitkeep
+!/data/HIPAA/
+
+# Evaluation outputs and logs
+/experiments/
+/outputs/
+/logs/
+/tmp/
+
+# Large binaries / caches
+*.npy
+*.gpickle
+*.faiss
+*.tar
+
+# Re-include the in-repo HIPAA evaluation data (must come after the
+# global *.gpickle / *.npy rules above). Embedding caches stay ignored.
+!/data/HIPAA/*.jsonl
+!/data/HIPAA/*.gpickle
