@@ -136,7 +136,6 @@ python cli/evaluate.py \
     --bench       "$BENCH" \
     --corpus      "$CORPUS" \
     --label       "walker_rag_${OUT_TAG}" \
-    --dedup-questions \
     --out         "${SCORES_DIR}/unified"
 
 echo

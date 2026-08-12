@@ -371,23 +371,35 @@ def validate(
             f"{', '.join(sorted(dupes)[:3])}"
         )
 
+    # Predictions for questions outside the benchmark are out of scope, not
+    # malformed — a prediction file generated against an older or larger
+    # release simply carries extras. They are skipped, and the coverage
+    # warning below still catches a genuinely mismatched benchmark file
+    # (it would report 0/N covered).
     unknown = sorted({p.qa_id for p in predictions if p.qa_id not in bench})
     if unknown:
-        errors.append(
-            f"{len(unknown)} qa_id not present in the benchmark, e.g. "
-            f"{', '.join(unknown[:3])}"
+        warnings.append(
+            f"{len(unknown)} prediction qa_id are not in the benchmark and "
+            f"will be skipped, e.g. {', '.join(unknown[:3])}"
         )
 
     by_variant: dict[str, set[str]] = {}
     for p in predictions:
         by_variant.setdefault(p.variant, set()).add(p.qa_id)
     for variant, ids in sorted(by_variant.items()):
-        missing = bench - ids
-        if missing:
+        covered = ids & bench
+        if not covered:
+            errors.append(
+                f"variant '{variant}' covers none of the {len(bench)} "
+                f"benchmark questions — wrong --bench file, or the qa_id "
+                f"scheme does not match"
+            )
+        elif covered != bench:
             warnings.append(
-                f"variant '{variant}' covers {len(ids & bench)}/{len(bench)} "
-                f"benchmark questions — the {len(missing)} missing ones are "
-                f"not scored, so its numbers are not comparable to a full run"
+                f"variant '{variant}' covers {len(covered)}/{len(bench)} "
+                f"benchmark questions — the {len(bench - ids)} missing ones "
+                f"are not scored, so its numbers are not comparable to a "
+                f"full run"
             )
 
     n_no_retrieval = sum(1 for p in predictions if p.ok and not p.retrieved_node_ids)

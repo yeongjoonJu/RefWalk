@@ -147,7 +147,6 @@ python cli/evaluate.py \
     --predictions experiments/my_rag/preds.jsonl \
     --bench       data/RegOps-Bench/regops_bench.jsonl \
     --corpus      data/okg/okg_nodes.jsonl \
-    --dedup-questions \
     --out         experiments/my_rag/scores
 ```
 
@@ -219,7 +218,7 @@ ground-truth regulation references for both retrieval and citation evaluation. T
 dataset (corpus `articles.jsonl` + QA `regops_bench.jsonl`) is hosted on
 [Hugging Face](https://huggingface.co/datasets/Y-J-Ju/RegOps-Bench).
 
-The evaluation set is the **deduplicated 231 questions** (L1/L2/L3/L4 = 48/81/45/57; 56 official + 175 augmented).
+The benchmark is **231 questions** (L1/L2/L3/L4 = 48/81/45/57; 56 official + 175 augmented).
 
 ### Results
 
@@ -252,7 +251,7 @@ dedicated retrieval runs (`scripts/eval_retrieval_baselines.sh`). All citation
 columns are reproduced by the pure-Python path:
 
 ```bash
-python cli/evaluate.py --dedup-questions --match-unit article_id \
+python cli/evaluate.py --match-unit article_id \
     --bench data/RegOps-Bench/regops_bench.jsonl \
     --corpus data/okg/okg_nodes.jsonl \
     --predictions experiments/refwalk/preds_35b.jsonl \

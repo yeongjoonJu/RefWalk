@@ -34,11 +34,8 @@ RefWalk / NativeRAG runners are not wired for it.
 
 ## 0. Which questions are scored
 
-`regops_bench.jsonl` ships 250 QA entries, 19 of which repeat an earlier
-question verbatim (all augmented, all L3/L4). The reported evaluation set is the
-deduplicated **231** questions — L1/L2/L3/L4 = 48/81/45/57, 56 official +
-175 augmented. Pass `--dedup-questions` to `cli/evaluate.py` to score on it; the
-flag is idempotent, so it stays correct if you have an already-deduplicated copy.
+`regops_bench.jsonl` is **231 QA entries** — L1/L2/L3/L4 = 48/81/45/57,
+56 official + 175 augmented. Every reported number uses all 231.
 See [`../docs/evaluation.md`](../docs/evaluation.md).
 
 ## 1. Download RegOps-Bench

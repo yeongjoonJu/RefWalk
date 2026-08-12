@@ -140,7 +140,6 @@ run_one() {
         --bench       "$bench" \
         --corpus      "$corpus" \
         --label       "refwalk_${tag}" \
-        --dedup-questions \
         --out         "${scores}/unified"
 }
 

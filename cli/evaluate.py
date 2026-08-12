@@ -92,10 +92,11 @@ def load_bench(path: Path) -> dict[str, dict]:
 def dedup_bench(bench: dict[str, dict]) -> tuple[dict[str, dict], list[str]]:
     """Drop questions whose text duplicates an earlier one.
 
-    RegOps-Bench shipped with 19 duplicate question strings among its 250
-    entries (all augmented, all L3/L4). The corrected evaluation set keeps
-    the lowest ``qa_id`` of each duplicate group, leaving 231 questions.
-    Idempotent: running this on an already-deduplicated file drops nothing.
+    RegOps-Bench ships already deduplicated, so this is a no-op on the
+    released file. It exists for pre-release copies, which carried 19
+    duplicate question strings among 250 entries (all augmented, all
+    L3/L4); collapsing those yields the released 231. Keeps the lowest
+    ``qa_id`` of each duplicate group and is idempotent.
     """
     by_question: dict[str, list[str]] = {}
     for qa_id, row in bench.items():
@@ -484,12 +485,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     p.add_argument(
         "--dedup-questions", action="store_true",
-        help="Score on the deduplicated benchmark: drop questions whose text "
-             "repeats an earlier entry, keeping the lowest qa_id of each "
-             "group. RegOps-Bench's original 250 entries contain 19 such "
-             "duplicates (all augmented, all L3/L4), so this yields the "
-             "corrected 231-question set the reported numbers use. "
-             "Idempotent on an already-deduplicated file.",
+        help="Collapse questions whose text repeats an earlier entry, "
+             "keeping the lowest qa_id of each group. The released "
+             "RegOps-Bench is already deduplicated, so this is a no-op on "
+             "it — use it only with a pre-release copy that still has the "
+             "19 duplicate entries. Idempotent.",
     )
     p.add_argument(
         "--skip-errors", action="store_true",
@@ -534,7 +534,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.dedup_questions:
         bench, dropped = dedup_bench(bench)
         print(f"[dedup] dropped {len(dropped)} duplicate-question entries → "
-              f"{len(bench)} questions")
+              f"{len(bench)} questions"
+              if dropped else
+              "[dedup] no duplicate questions found (already deduplicated)")
 
     corpus_ids = load_corpus_ids(args.corpus)
     if corpus_ids:
@@ -565,15 +567,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"[load] predictions={len(preds)} records from "
           f"{len(args.predictions)} file(s)")
 
-    if args.dedup_questions:
-        # Predictions for dropped duplicates are simply out of scope here,
-        # not a format error — silently narrow to the deduplicated set.
-        before = len(preds)
-        preds = [p for p in preds if p.qa_id in bench]
-        if before != len(preds):
-            print(f"[dedup] ignored {before - len(preds)} prediction records "
-                  f"for dropped questions")
-
+    # Validate BEFORE narrowing to the benchmark — the "covers none of the
+    # benchmark" check needs to see the original variants, otherwise a
+    # completely mismatched --bench file silently scores zero records.
     report = validate(preds, bench.keys(), corpus_ids)
     for w in report["warnings"]:
         print(f"[warn] {w}")
@@ -581,6 +577,14 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[error] {e}", file=sys.stderr)
     if not report["ok"]:
         return 2
+
+    # Score only what the benchmark asks about; extras are out of scope
+    # (validate() already warned about them).
+    before = len(preds)
+    preds = [p for p in preds if p.qa_id in bench]
+    if before != len(preds):
+        print(f"[filter] skipped {before - len(preds)} prediction records "
+              f"outside the benchmark")
     if args.validate_only:
         print(f"[ok] {report['n_predictions']} records, "
               f"{report['n_variants']} variant(s): "

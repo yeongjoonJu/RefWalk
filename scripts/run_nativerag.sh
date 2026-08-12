@@ -92,5 +92,4 @@ python cli/evaluate.py \
     --bench       "$BENCH" \
     --corpus      "$CORPUS" \
     --label       "native_rag_${OUT_TAG}" \
-    --dedup-questions \
     --out         "${SCORES_DIR}/unified"
