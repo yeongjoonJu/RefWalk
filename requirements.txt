@@ -1,0 +1,45 @@
+# RefWalk — retrieval + RAG + evaluation dependencies.
+# Python >= 3.10 (the code uses PEP 604 `X | None` and `match_unit: str` syntax).
+#
+#   pip install -r requirements.txt
+#
+# This file covers everything the released pipeline imports: OKG build,
+# retrieval, RefWalk / NativeRAG inference, and evaluation. Model serving
+# (vLLM) is deliberately not pinned here — see the note at the bottom.
+
+# ── Core ───────────────────────────────────────────────────────────────
+openai>=1.30            # OpenAI-compatible client for vLLM / Gemini endpoints
+pydantic>=2.0           # structured-output schemas
+networkx>=3.1           # OKG graph (build + 1-hop expansion)
+numpy>=1.24             # embedding math
+requests>=2.31          # HTTP to the embedding / reranker servers
+tqdm>=4.65              # progress bars
+
+# ── Retrieval ──────────────────────────────────────────────────────────
+faiss-cpu>=1.7          # dense ANN search; swap for faiss-gpu if preferred
+rank-bm25>=0.2.2        # BM25 baseline
+transformers>=4.40      # reranker tokenizer (imported at module load)
+
+# ── Optional ───────────────────────────────────────────────────────────
+# Only needed to read an API key out of a local .env file. The loader is
+# wrapped in try/except, so the pipeline runs fine without it — export
+# GEMINI_API_KEY yourself instead.
+python-dotenv>=1.0
+
+# ── Model serving ──────────────────────────────────────────────────────
+# The answer LLM, embedder, and reranker are served over OpenAI-compatible
+# HTTP endpoints by vLLM (https://github.com/vllm-project/vllm), launched
+# with `scripts/serve_vllm.sh <role>`. vLLM is not pinned here because the
+# right build depends on your CUDA / GPU setup — install it separately:
+#
+#     pip install vllm
+#
+# Nothing in this repo imports vllm at module load; `src/retrieval/reranker.py`
+# imports it lazily only on the offline (in-process) reranking path, so the
+# evaluator and the OKG build work without it.
+#
+# Troubleshooting: if another installed package registers a broken vLLM
+# entry-point plugin, `vllm serve` fails during engine startup with an
+# unrelated import error. Disable third-party plugins to isolate it:
+#
+#     VLLM_PLUGINS="" bash scripts/serve_vllm.sh 4b --gpu 0
