@@ -1,36 +1,3 @@
-"""Fallback-mode detector.
-
-A v7 answer is in "fallback mode" when the planner could not find a
-law-level citation and either (a) cited only a manual / 표준지침 /
-별표, or (b) emitted a CAVEAT, or (c) returned a degraded stop
-(empty citations + non-empty answer, or planner-fallback sentinel).
-
-This module reads one run row (from ``runs.jsonl``) plus, optionally,
-the run's OKG to classify each citation by authority level.
-
-Fallback classification (w.r.t. v7 prompt's citation policy):
-  - ``primary``       : at least one STATUTE / DECREE / RULE / NOTICE
-                         citation — this is the sanctioned primary
-                         evidence source (NOTICE includes 사용기준 and
-                         표준지침, which are the normative rules for
-                         R&D expense QAs).
-  - ``mixed_manual``  : primary + MANUAL (no degradation — manual is a
-                         helper, not a fallback here).
-  - ``manual_only``   : only MANUAL-authority citations. This is the
-                         fallback path and MUST carry a CAVEAT per v7.
-  - ``none``          : no citations at all.
-
-Additional flags:
-  - ``has_caveat``    : ``caveats_count > 0`` or CAVEAT token in answer.
-  - ``degraded_stop`` : planner-fallback sentinel seen in trajectory
-                         or answer is non-empty but ``cited_references``
-                         is empty.
-  - ``manual_fallback_ok`` : manual-only citation WITH caveat — the v7
-                              prompt's sanctioned fallback path.
-  - ``manual_fallback_violation`` : manual-only citation WITHOUT
-                                     caveat — violation of v7 rule.
-"""
-
 from __future__ import annotations
 
 import re

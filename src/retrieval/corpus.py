@@ -1,25 +1,3 @@
-"""Corpus loading + node_id helpers for OpsCompile retrieval.
-
-Moved 2026-04-28 from ``src/baselines/retrieval.py`` (alongside the
-embedding client and the BM25/Hybrid baselines, which now live in
-``src.retrieval.embedding`` and ``src.retrieval.baselines``).
-
-The legacy import path ``src.baselines.retrieval`` is preserved as a
-re-export shim, so existing CLI / scripts / tests keep working
-without changes.
-
-Public surface
---------------
-- ``Corpus``                 — node_ids + texts + id_to_idx dataclass.
-- ``load_corpus(...)``       — read a parse-stage articles jsonl
-                                (full 조 entries) or okg_nodes-style
-                                jsonl (조/항/호 split, optionally
-                                ancestor-prefixed).
-- ``load_faq(path)``         — read FAQ_examples-style json.
-- ``_canon_ref(ref)``        — normalise one legacy typo.
-- ``_article_ancestor(nid)`` — map any 항/호/별표 id to its 조 id.
-"""
-
 from __future__ import annotations
 
 import json

@@ -1,23 +1,3 @@
-"""Oracle-context builder: GT articles + 1-hop OKG distractors.
-
-Used by the ``--oracle`` generation modes of RefWalk
-(:mod:`src.refwalk`) and NativeRAG (:mod:`src.baselines.native_rag`).
-
-The oracle context is **not** just the ground-truth articles: that makes
-citation precision trivially easy (every passage is a correct cite). To
-keep the citation task realistic while still removing retrieval error,
-we fill the context up to ``total_k`` passages with *distractors* drawn
-from the 1-hop OKG neighbourhood of the GT articles (random sample).
-The combined GT+distractor list is shuffled so position carries no
-signal, deterministically per ``qa_id`` so resume / re-runs are stable.
-
-Granularity note: bench ``gt_references`` and OKG neighbours are often
-clause-level (``..._제48조_제8항``) while the parse-stage corpus is
-article-level (``..._제48조``). Everything is rolled up to the longest
-ancestor present in the corpus before set operations, so a GT clause and
-its sibling clause never leak in as a "distractor" of the same article.
-"""
-
 from __future__ import annotations
 
 import random

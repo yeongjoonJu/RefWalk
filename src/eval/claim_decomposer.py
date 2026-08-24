@@ -1,22 +1,3 @@
-"""Claim decomposer — split an answer into atomic Korean claims.
-
-Uses Qwen3.6-35B-A3B-FP8 @ :8035 (self-hosted vLLM, OpenAI-compatible).
-Deterministic profile (`judge_strict`, thinking off) keeps decomposition
-stable across the GT answer and the predicted answer.
-
-Atomic = one normative statement (one actor, one action, optionally one
-condition or qualifier). Citations, section numbers, and formatting
-markers are stripped from the claim text by the LLM at emit time.
-
-Disk-backed cache at ``data/cache/claim_decomposer/<sha1>.json`` so the
-same answer is decomposed once across reruns.
-
-Example:
-    dec = ClaimDecomposer()
-    claims = dec.decompose("영리기관은 원칙적으로 …", answer_id="gt:ko_005")
-    # -> [{"id": "c1", "text": "영리기관은 원칙적으로 현금 인건비 산정이 불가능하다."}, ...]
-"""
-
 from __future__ import annotations
 
 import hashlib

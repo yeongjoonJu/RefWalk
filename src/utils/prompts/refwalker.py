@@ -1,16 +1,3 @@
-"""RefWalk prompts.
-
-Holds the RefWalk-facing prompt text: online query anchoring
-(``TOPIC_ANCHORING``), the cited-answer generation prompts
-(``REFWALK_SYSTEM`` / ``get_user_prompt``), and the Chain-of-Rules
-extraction prompts.
-
-All system instructions are in English. User-facing content
-(regulations, questions) remains in the corpus language (Korean for
-RegOps-Bench).
-"""
-
-
 TOPIC_ANCHORING = """Extract a procedural topic and structured conditions from a given question for {domain}.
 
 ## Topic

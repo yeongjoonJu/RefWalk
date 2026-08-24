@@ -1,29 +1,3 @@
-"""Embedding API client + Dense retriever (Qwen3-Embedding-4B).
-
-Updated 2026-04-28: switched from ``Qwen3-VL-Embedding-2B`` (multimodal,
-1536-d) to ``Qwen/Qwen3-Embedding-4B`` (text-only, 2560-d, 8192-token
-context).
-
-Query side uses the official ``get_detailed_instruct(task, query)``
-formatting (prepends ``Instruct: …\\nQuery:…`` as a single text input);
-documents are embedded with no instruction prefix.
-
-The HTTP wire format is the standard OpenAI-compatible
-``POST /v1/embeddings`` with ``input`` as a list of strings — the
-multimodal ``messages`` payload that the prior 2B model required is
-gone.
-
-Public surface
---------------
-- ``EMBED_URL`` / ``EMBED_MODEL`` / ``EMBED_BATCH`` / ``EMBED_MAX_CHARS``
-  — configuration constants.
-- ``DEFAULT_TASK_INSTRUCTION`` — Korean R&D regulations task prompt.
-- ``get_detailed_instruct(task, query)`` — query-side formatter.
-- ``_embed_documents(texts)`` / ``_embed_query(question)`` — HTTP helpers.
-- ``DenseRetriever`` — FAISS cosine-similarity retriever over corpus
-  embeddings (cache-aware).
-"""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,35 +1,3 @@
-"""Unified retrieval + generation metrics for Phase B.5 evaluation.
-
-Retrieval (per-query, then averaged):
-  - R@5 / R@10       — top-k coverage of gold (|retrieved_topk ∩ gold| / |gold|)
-  - nDCG@10          — ranking-aware relevance (binary rel on gold)
-  - FullCov@10       — top-10 contains ALL gold (binary per query)
-
-Generation (per-query, then averaged):
-  - CP  (Citation Precision)       — |cited ∩ gold| / |cited|
-  - CR  (Citation Recall)          — |cited ∩ gold| / |gold|
-  - CFP (Citation False Positive)  — |cited − corpus| / |cited|
-                                      (hallucinated references outside the OKG)
-
-Both families accept ``match_unit="node_id" | "article_id"``.
-
-  - "node_id"    — compare retrieved/gold ids verbatim (combined with
-                   ``hit_rule`` to optionally allow ancestor/descendant
-                   matches). This is the original "node-level" mode.
-  - "article_id" — both retrieved and gold are rolled up to their 조-level
-                   ancestor (see `_article_ancestor` from
-                   src.retrieval.corpus) before scoring. This is the
-                   original "article-level" mode.
-
-The legacy keyword ``granularity`` and values ``"node"`` / ``"article"``
-remain accepted for backward compatibility — they map to
-``match_unit`` / ``"node_id"`` / ``"article_id"`` respectively. The new
-naming makes explicit that this dial controls **how IDs are normalised
-at match time**, not the corpus structure.
-
-All inputs are canonicalised via `_canon_ref` (one legacy typo).
-"""
-
 from __future__ import annotations
 
 import math

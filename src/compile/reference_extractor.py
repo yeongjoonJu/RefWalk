@@ -1,12 +1,3 @@
-"""Inline reference extraction for OKS/OKG.
-
-Scans NormalizedArticle text_ko and emits InlineReference records
-(schema: docs/OpsCompile_Schema_Reference_v1.md §2, §4.1). Each reference
-carries its type, the exact raw substring, and character span. Resolution
-to target node_ids happens later in `okg.py` once the full article index
-is available.
-"""
-
 from __future__ import annotations
 
 import re

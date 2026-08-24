@@ -1,27 +1,3 @@
-"""Ancestor-prefixed retrieval text for OKG leaf nodes.
-
-For retrieval, each *leaf* node (a node with no child PART_OF edges pointing
-to it) is given an ``indexed_text`` field that includes its article title,
-parent 항 body, and self — so embeddings and BM25 carry the article context
-a legal clause needs to be interpretable (e.g. a 호 like "천재지변 등
-불가항력적 사유" is meaningless without its parent 항).
-
-Rules (leaf is self + *ancestor* chain, never siblings):
-  - 호 leaf (under 항):        "{article_title} / {항 body} / {self 호 text}"
-  - 호 leaf (direct under 조): "{article_title} / {self 호 text}"
-  - 항 leaf (no 호 child):     "{article_title} / {self 항 text}"
-  - 조 leaf (no 항 child):     "{article_title}: {stripped body}"
-  - 매뉴얼 절 leaf:            "{제N장 (chapter_title)} / {제M절 (section_title)}: {body}"
-
-Edges in the OKG run *child → parent* (``add_edge(para_id, article_id,
-type="PART_OF")`` in ``okg.py:256``), so: predecessors-via-PART_OF are
-children, successors-via-PART_OF are parents.
-
-The module preserves ``data.text_ko`` (for display / provenance); it
-writes three new fields: ``data.article_title``, ``data.is_leaf``,
-``data.indexed_text`` (empty string for non-leaf).
-"""
-
 from __future__ import annotations
 
 import re

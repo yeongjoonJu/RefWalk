@@ -1,27 +1,3 @@
-"""WalkerRAG = NativeRAG generation on top of Walker retrieval.
-
-Plumbs the OKG-aware retrieval stack used by the "Ours" / Walker baseline
-into the same prompt + LLM + citation-parser scaffolding that
-``src.baselines.native_rag.NativeRagWorkflow`` uses, so the prediction
-schema remains identical to NativeRAG / LightRAG / HippoRAG-2 / PIKE-RAG.
-
-What's reused from NativeRAG:
-  * ``_PROMPTS`` (system + user prompt for ko / en)
-  * ``_build_user_prompt`` style — numbered ``[i] node_id`` reference list
-  * ``_parse_cited_ids`` — pulls node_ids from the trailing
-    ``[참조] …`` / ``[Citations] …`` footer
-  * ``NativeRagResult`` dataclass (no fork — downstream
-    ``run_generation_eval.py`` doesn't care about the workflow class).
-
-What's swapped in:
-  * Retrieval: ``WalkerRetrievalPipeline`` (topic + tagged seed +
-    OKG 1-hop expansion + Qwen3-Reranker) instead of plain dense /
-    dense+rerank.
-
-The LLM step is identical to NativeRAG so any quality delta in scores
-attributes cleanly to the retrieval substitution.
-"""
-
 from __future__ import annotations
 
 import re

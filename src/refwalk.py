@@ -1,31 +1,3 @@
-"""RefWalk = WalkerRetrieval + structured-JSON answer + per-clause citations.
-
-Pipeline for one question:
-
-  1. ``WalkerRetrievalPipeline.retrieve_for_generation`` runs the full
-     anchored retrieval stack (topic+conditions extraction → tagged seed
-     dense → 1-hop OKG expansion → 3-view RRM rerank) and returns
-     ``(hits, anchored_dict)``.
-  2. The hits + anchor go through ``get_user_prompt`` from
-     ``src.utils.prompts.refwalker`` to build the Korean Context/Question
-     prompt. ``REFWALK_SYSTEM`` (same module) is used as the system role.
-  3. The answer LLM is called in JSON-object mode (``Qwen3_5_HParams['exact']``
-     by default — deterministic enough for citation extraction). The
-     prompt fixes the schema as
-     ``{"<node_id>": [<claim>, ...], ..., "answer": "<str>"}`` so the
-     emitted JSON keys *are* the cited node_ids.
-  4. ``cited_references`` are pulled with the trivial logic the user
-     specified::
-
-         cited_references = [k for k in output.keys() if k != "answer"]
-
-     We additionally roll over-specific keys (e.g. ``..._제22조_제4항_제4호``
-     when only ``..._제22조_제4항`` is in the corpus) up to the nearest
-     valid ancestor — this matches ``src.baselines.native_rag._parse_cited_ids``
-     so the downstream ``cli/run_generation_eval.py`` scorer treats
-     RefWalk citations identically to NativeRAG / Walker-RAG.
-"""
-
 from __future__ import annotations
 
 import re

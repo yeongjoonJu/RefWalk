@@ -1,27 +1,3 @@
-"""Backward-compat shim for ``src.baselines.retrieval``.
-
-The actual retrieval primitives live under ``src.retrieval`` as of
-2026-04-28:
-
-  - ``src.retrieval.corpus``    — ``Corpus``, ``load_corpus``,
-                                   ``load_faq``, ``_canon_ref``,
-                                   ``_article_ancestor``.
-  - ``src.retrieval.embedding`` — ``EMBED_*`` constants,
-                                   ``get_detailed_instruct``,
-                                   ``_embed_documents``,
-                                   ``_embed_query``,
-                                   ``DenseRetriever``.
-  - ``src.retrieval.baselines`` — ``BM25Retriever``,
-                                   ``HybridRetriever``,
-                                   ``LLMReranker``,
-                                   ``Qwen3VLRerankerRetriever``,
-                                   ``_min_max_norm``, ``_tokenize``.
-
-This module re-exports those symbols at the legacy import path so
-existing CLI / scripts / tests keep working without churn. New code
-should import from the canonical ``src.retrieval.*`` modules.
-"""
-
 from __future__ import annotations
 
 from src.retrieval.baselines import (  # noqa: F401

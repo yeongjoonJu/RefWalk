@@ -1,30 +1,3 @@
-"""Clause-level (항/호) citation extraction, fair across output formats.
-
-Article-level citation F1 rolls every reference up to its 조 ancestor, which
-hides whether a system found the *right paragraph*. Scoring at full
-granularity instead is only meaningful if every system gets credit for the
-clauses it actually names — and systems name them in different places:
-
-  * A system emitting structured output puts the clause in a bracketed tag
-    inside its per-article payload (``"... [제8항] ..."``), not in its
-    citation key list, which stays 조-level.
-  * A free-form system names the clause in prose (``"제48조제8항에 따라 …"``)
-    and its citation list is likewise 조-level.
-
-Scoring either one against its citation list alone measures output format,
-not grounding. This module recovers the clause ids from both shapes so the
-strict metric compares grounding.
-
-Dispatch is on the record's shape, never on a system name:
-
-  * ``raw_output`` present (a dict keyed by 조-level node_id) → read the
-    bracketed tags in its values.
-  * otherwise → parse the answer prose, grounding each 조 number to a law
-    prefix through the ids the system itself cited or retrieved.
-
-Ported from the E13 / E1 rebuttal analyses.
-"""
-
 from __future__ import annotations
 
 import re

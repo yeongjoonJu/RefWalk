@@ -1,21 +1,3 @@
-"""Article-level dedup for retrieval output.
-
-After the reranker has scored a candidate pool, multiple candidates from
-the same 조 may survive with similar scores (especially when leaf texts
-carry an ancestor prefix — they share article context, so cosine +
-cross-encoder both give them near-identical scores). Under a top-k budget
-we prefer *diversity* across articles to redundancy within one.
-
-Rule: walk the input ranking in order; for each 조-ancestor, keep the
-**first** occurrence (i.e., the highest-ranked). Drop subsequent hits
-from the same 조. Truncate to ``k``.
-
-The input is any sequence of ``(node_id, score)`` — the common output
-shape of every baseline in ``src.baselines.retrieval``. The Walker's
-``RetrievalHit`` objects are normalised to tuples upstream in the eval
-harness, so a single utility suffices.
-"""
-
 from __future__ import annotations
 
 from typing import Sequence

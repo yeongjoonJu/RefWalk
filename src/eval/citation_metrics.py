@@ -1,35 +1,3 @@
-"""Citation Precision / Recall / F1 with article-level rollup.
-
-A predicted citation (항/호-level node_id or 조-level literal) counts
-as correct iff its 조-level ancestor is present in the GT article
-set. Rollup uses ``_article_ancestor`` from ``src.retrieval.corpus``
-which already handles the 제N조 / 제N조의M pattern, and
-``_canon_ref`` which normalises one legacy typo in the corpus.
-
-Three levels of strictness are computed so we can see cost/benefit:
-
-  - **article**  (default) : ancestor-to-ancestor, dedup on 조-level.
-                             Matches ``evaluate()`` in retrieval eval.
-  - **exact**              : string equality (after canonicalisation),
-                             no rollup. Strictest.
-  - **article_or_desc**    : a gt 조 counts as hit if any pred starts
-                             with gt 조-id (pred may be 항/호-level).
-
-The rollup is lossless for our smoke QAs — gt_references are always
-조-level literals, and predicted `cited_references` come back from the
-planner as 항/호/조 ids. article rollup is the faithful default.
-
-Returned dict per run::
-
-    {
-      "article": {"precision": .., "recall": .., "f1": .., "tp": int,
-                  "fp": int, "fn": int, "pred_articles": [...],
-                  "gt_articles": [...]},
-      "exact":   {... same keys ...},
-      "article_or_desc": {... same ...},
-    }
-"""
-
 from __future__ import annotations
 
 from src.retrieval.corpus import _article_ancestor, _canon_ref

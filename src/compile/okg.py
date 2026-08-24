@@ -1,23 +1,3 @@
-"""OKG construction from NormalizedArticle + InlineReference.
-
-Pipeline:
-  1. Build an article index (document_name × article_number → node_id).
-  2. Resolve each inline reference to one or more target node_ids.
-  3. Add operational / definition / form nodes and edges to a NetworkX
-     DiGraph according to docs/OpsCompile_Schema_Reference_v1.md §3.
-
-Edge semantics (Phase A-ext, 6 tiers):
-  PART_OF        — structural hierarchy (항 → 조, 호 → 항).
-  REFERENCES     — article A cites article B (same doc or cross-law).
-  DELEGATES_TO   — higher-authority article delegates detail to lower one.
-  SPECIFIES      — inverse of DELEGATES_TO (lower specifies higher).
-  DEFINES        — DefinitionNode → article whose term it defines.
-  REQUIRES_FORM  — article → form.
-
-Removed in Phase A-ext (0 populate on Korean regulation corpus — future work):
-  PRECEDES, USES_SYSTEM, SUPERSEDES.
-"""
-
 from __future__ import annotations
 
 import json

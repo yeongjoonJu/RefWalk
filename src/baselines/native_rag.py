@@ -1,18 +1,3 @@
-"""NativeRAG baseline — dense retrieval + (optional) reranker + LLM.
-
-The simplest classical RAG pipeline, intended as a comparison floor for
-the LightRAG / HippoRAG2 / PIKE-RAG baselines:
-
-    1. Embed the user question with Qwen3-Embedding-0.6B and FAISS-search
-       the parse-stage article corpus (data/parsed/articles_*.jsonl).
-    2. Optionally cross-rerank the top-N candidates with Qwen3-Reranker.
-    3. Build a Korean prompt with a numbered "Reference Document List"
-       and ask the LLM to answer + emit a ``[참조] node_id, ...`` footer.
-
-The output schema mirrors ``cli/run_pike_rag_eval.py`` / ``cli/run_hipporag2_eval.py``
-so ``cli/run_generation_eval.py`` can score it without any changes.
-"""
-
 from __future__ import annotations
 
 import re

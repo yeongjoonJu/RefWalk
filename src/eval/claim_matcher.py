@@ -1,31 +1,3 @@
-"""Claim matcher — LLM-as-judge bipartite matching between two claim lists.
-
-Given a list of predicted claims (from the model answer) and a list of
-reference claims (from the GT answer), we ask a deterministic judge
-("judge_strict" profile, thinking off) to label every pair with one of
-{match, partial, none} and then compute:
-
-  - Claim Precision = (matches + 0.5*partials) / |pred|
-  - Claim Recall    = (matches + 0.5*partials) / |gt|
-  - Claim F1        = harmonic mean
-
-Partials get half-credit by default (configurable via `partial_weight`).
-Matches are greedy after sorting pairs by label priority — each pred
-and gt is consumed at most once so double-counting is impossible.
-
-The judge is called one pred-claim at a time against the *full* GT
-claim list. For a pred with C GT candidates the judge returns
-the best label; we then resolve pred→gt exclusively across the batch.
-This is O(|pred|) LLM calls, not O(|pred|*|gt|). For our smoke scale
-(≤20 claims each side) that's ~5-20 calls per answer.
-
-Cross-model option: `base_url` / `model_id` can point at a different
-server to reduce same-model sympathy bias. When left at defaults, uses
-the local Qwen3.6 with the strict profile. The plan prefers a cross-
-model judge (Claude API) but we keep a self-hosted default for
-offline reproducibility — the choice is CLI-exposed by the runner.
-"""
-
 from __future__ import annotations
 
 import hashlib

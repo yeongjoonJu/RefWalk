@@ -1,22 +1,3 @@
-"""Retrieval baselines for FAQ evaluation.
-
-Moved 2026-04-28 from ``src/baselines/retrieval.py`` (alongside corpus
-loading and the embedding client). Legacy import path
-``src.baselines.retrieval`` is preserved as a re-export shim.
-
-B1. BM25                – rank_bm25 over corpus texts (Korean tokeniser)
-B3. Hybrid              – linear combination of BM25 + Dense scores
-B5_legacy.              – Hybrid top-N → Qwen3.6-35B yes/no reranking
-B5 (neo). Qwen3Reranker — Hybrid top-N → Qwen3-Reranker-4B softmax score
-
-The OKG-aware family (former B4 / B6) was retired: B4 (decay-only
-expansion) never scored neighbours against the query, and B6
-(Reranker(B4)) was a strict subset of WalkerRetrievalPipeline with a
-narrower candidate pool. The canonical OKG-aware retriever is now
-``src.retrieval.walker_retrieval.WalkerRetrievalPipeline`` (hybrid
-top-30 + 1-hop typed expansion + Qwen3-Reranker over the union).
-"""
-
 from __future__ import annotations
 
 import re
