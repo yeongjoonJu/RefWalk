@@ -232,7 +232,7 @@ End-to-end on RegOps-Bench (231 questions, `--match-unit article_id`).
 | LightRAG | 45.3 | 32.5 | 40.7 | 27.7 | 23.3 | 37.0 |
 | HippoRAG-2 | 42.6 | 29.9 | 47.8 | 29.9 | 29.7 | 37.0 |
 | PIKE-RAG | 54.6 | 37.2 | 44.3 | 28.2 | 12.2 | 38.0 |
-| **RefWalk (ours)** | **64.3** | **46.8** | **54.9** | **38.1** | **42.7** | **41.1** |
+| **RefWalk (ours)** | **63.8** | **45.9** | **54.9** | **38.1** | **42.7** | **41.1** |
 
 Citation F1 at three granularities: **조** rolls both sides up to the article
 ancestor, **strict** preserves whatever granularity each side states, and
@@ -268,7 +268,7 @@ If you use RefWalk or RegOps-Bench, please cite:
 @article{ju2026citation,
   title={Citation-Closure Retrieval and Per-Rule Attribution for Real-World Regulatory Compliance Question Answering},
   author={Ju, Yeong-Joon and Lee, Seong-Whan},
-  journal={arXiv preprint arXiv:2605.29742},
+  journal={Findings of EMNLP},
   year={2026}
 }
 ```

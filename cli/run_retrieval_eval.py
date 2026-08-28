@@ -53,19 +53,6 @@ def _retrieval_columns(ks: tuple[int, ...]) -> tuple[str, ...]:
 
 def _load_faq(faq_path: Path, faq_val_path: Path | None) -> list[dict]:
     """Load FAQ and resolve a difficulty per row.
-
-    Source-of-truth precedence (highest first):
-      1. ``difficulty`` already on the FAQ row (the official benchmark
-         file owns the label — never overwrite it).
-      2. ``per_qa[*].difficulty`` from ``--faq-val`` (compiled artifact;
-         used only as a *fallback* for rows missing a label).
-      3. ``"?"`` if neither source has it.
-
-    Historically this function blindly overwrote (1) with (2), which
-    silently drifts whenever the auto-relabeled validation file lags
-    the canonical FAQ. Per-difficulty numbers across baselines then
-    bucket into different L1-L4 populations and become non-comparable
-    even though the per-query retrieval results are identical.
     """
     if faq_path.suffix == '.jsonl':
         faq = load_jsonl(faq_path)
@@ -108,17 +95,6 @@ def _run_one(
     hit_rule: str = "strict",
 ) -> tuple[dict, dict, list[dict]]:
     """Return (node_agg, article_agg, per_query_trace).
-
-    When ``dedup`` is True, each retriever is called with ``top_k=raw_k``
-    and the ranked output is collapsed to at most ``top_k_probe`` unique
-    조-ancestors before metrics are computed.
-
-    ``hit_rule`` is forwarded to ``compute_all_metrics`` (see
-    src/eval/metrics.py): "strict" (default) requires exact id equality;
-    "hierarchical" credits a hit when the retrieved id is an ancestor
-    or descendant of a gold id along the PART_OF chain. The latter
-    fixes the leaf-only corpus measurement gap when ``--use-indexed-text``
-    is on but ``gt_references`` contain non-leaf 조 ids.
     """
     node_per_q: list[dict] = []
     art_per_q: list[dict] = []
@@ -274,11 +250,14 @@ def main() -> int:
     ap.add_argument("--okg", type=Path, default=Path("data/okg/okg.gpickle"))
     ap.add_argument("--top-k-probe", type=int, default=10)
     ap.add_argument("--alpha", type=float, default=0.5)
-    ap.add_argument("--rerank-pool", type=int, default=0,
-                    help="WalkerRetrievalPipeline rerank_pool. 0 means top_k_probe*2 "
-                         "(legacy default); set 50 to match the paper config.")
-    ap.add_argument("--okg-expand-seed", type=int, default=0,
-                    help="WalkerRetrievalPipeline okg_expand_seed. 0 means top_k_probe.")
+    ap.add_argument("--rerank-pool", type=int, default=50,
+                    help="WalkerRetrievalPipeline rerank_pool (dense seeds fetched "
+                         "before OKG expansion). 50 is the published configuration; "
+                         "pass 0 for the legacy top_k_probe*2 behaviour.")
+    ap.add_argument("--okg-expand-seed", type=int, default=10,
+                    help="WalkerRetrievalPipeline okg_expand_seed (seeds that drive "
+                         "the 1-hop walk). 10 is the published configuration; pass 0 "
+                         "for the legacy top_k_probe behaviour.")
     ap.add_argument("--topic-llm-base-url", default=None,
                     help="Override the LLM endpoint used by Walker's online "
                          "TopicExtractor (defaults to localhost:8035).")
@@ -298,8 +277,8 @@ def main() -> int:
             "parse: one entry per full article (조), with sub-paragraphs/"
             "items already concatenated into text_ko. Use with parse-stage "
             "files like data/parsed/articles_*.jsonl when you want "
-            "article-unit retrieval. NOTE: with gt at 항/호 level, use "
-            "--hit-rule hierarchical so 조 retrieval credits sub-clause gt."
+            "article-unit retrieval. NOTE: with gt at 항/호 level,"
+            "use --hit-rule hierarchical so 조 retrieval credits sub-clause gt."
         ),
     )
     ap.add_argument(
@@ -372,11 +351,6 @@ def main() -> int:
     b4 = Qwen3VLRerankerRetriever(dense, corpus)
     b5 = Qwen3VLRerankerRetriever(hybrid, corpus)
 
-    # WalkerRetrievalPipeline auto-constructs a default TopicExtractor
-    # for raw-string queries. The eval CLI feeds pre-anchored FAQ rows
-    # (dicts with topic + actor/temporal/magnitude/situational), so the
-    # extractor never fires here — but keeping it on by default lets
-    # the same pipeline serve online raw-string traffic without changes.
     topic_extractor_kwargs = {}
     if args.topic_llm_base_url:
         topic_extractor_kwargs["base_url"] = args.topic_llm_base_url
